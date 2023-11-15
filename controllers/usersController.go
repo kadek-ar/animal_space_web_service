@@ -19,6 +19,7 @@ func Signup(c *gin.Context) {
 	var body struct {
 		Email    string
 		Password string
+		Username string
 	}
 
 	if c.Bind((&body)) != nil {
@@ -38,7 +39,7 @@ func Signup(c *gin.Context) {
 	}
 
 	// create the user
-	user := models.User{Email: body.Email, Password: string(hash)}
+	user := models.User{Email: body.Email, Password: string(hash), Username: body.Username, Role: "user"}
 	result := initializers.DB.Create(&user)
 
 	if result.Error != nil {
@@ -67,9 +68,8 @@ func Login(c *gin.Context) {
 
 	// look up requested user
 	var user models.User
-	result := initializers.DB.First(&user, "email = ?", body.Email)
-	fmt.Println("test")
-	fmt.Println(result)
+	initializers.DB.First(&user, "email = ?", body.Email)
+
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "User Not Found",
@@ -105,11 +105,24 @@ func Login(c *gin.Context) {
 	}
 
 	//send it back
-	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
+	// c.SetSameSite(http.SameSiteLaxMode)
+	// c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"token": tokenString,
+	})
+
+}
+
+func GetUserLogin(c *gin.Context) {
+	user, _ := c.Get("user")
+	// user.(models.User).
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege":  "success",
+		"email":    user.(models.User).Email,
+		"username": user.(models.User).Username,
+		"role":     user.(models.User).Role,
 	})
 
 }

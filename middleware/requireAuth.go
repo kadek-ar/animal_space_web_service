@@ -6,6 +6,7 @@ import (
 	"os"
 	"project/web-service-gin/initializers"
 	"project/web-service-gin/models"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,11 +15,15 @@ import (
 
 func RequireAuth(c *gin.Context) {
 	// Get the cookie off req
-	tokenString, err := c.Cookie(("Authorization"))
+	// tokenString, err := c.Cookie(("Authorization"))
+	tokenString := c.Request.Header["Authorization"][0]
+	splitToken := strings.Split(tokenString, "Bearer ")
+	tokenString = splitToken[1]
 
-	if err != nil {
-		c.AbortWithStatus(http.StatusUnauthorized)
-	}
+	fmt.Println(tokenString)
+	// if err != nil {
+	// 	c.AbortWithStatus(http.StatusUnauthorized)
+	// }
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -27,6 +32,9 @@ func RequireAuth(c *gin.Context) {
 
 		return []byte(os.Getenv("SECRET")), nil
 	})
+	fmt.Println("---")
+	fmt.Println(err)
+	fmt.Println("---")
 	if err != nil {
 		c.AbortWithStatus(http.StatusUnauthorized)
 	}
