@@ -53,7 +53,7 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Credentials", "true")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH, OPTIONS, GET, PUT")
+		c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH, OPTIONS, GET, PUT, DELETE")
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -68,6 +68,7 @@ func main() {
 	// DatabaseConnection()
 	router := gin.Default()
 	// router.Use(cors.Default())
+	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 	router.Use(CORSMiddleware())
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
@@ -75,6 +76,19 @@ func main() {
 	router.POST("/login", controllers.Login)
 	router.GET("/validate", middleware.RequireAuth, controllers.Validate)
 	router.GET("/user", middleware.RequireAuth, controllers.GetUserLogin)
+	router.POST("/shelter/create", middleware.RequireAuth, controllers.CreateShelter)
+	router.GET("/shelter", middleware.RequireAuth, controllers.GetAllShelter)
+	router.PUT("/shelter/approval", middleware.RequireAuth, controllers.ApprovalShelter)
+	router.POST("/shelter/category", middleware.RequireAuth, controllers.CreateCategory)
+	router.GET("/shelter/category", middleware.RequireAuth, controllers.GetAllCategories)
+	router.POST("/upload", middleware.RequireAuth, controllers.UploadFile)
+	router.POST("/animal", middleware.RequireAuth, controllers.CreateAnimal)
+	router.GET("/animal", middleware.RequireAuth, controllers.GetAllAnimalByShelter)
+	router.GET("/animal/:id", middleware.RequireAuth, controllers.GetAnimal)
+	router.PUT("/animal/:id", middleware.RequireAuth, controllers.UpdateAnimal)
+	router.DELETE("/animal/:id", middleware.RequireAuth, controllers.DeleteAnimal)
+	router.GET("/animal-space", middleware.RequireAuth, controllers.GetAllAnimal)
+	router.GET("/animal-space/:id", middleware.RequireAuth, controllers.GetSingelAnimal)
 
 	router.Run("localhost:8081")
 }

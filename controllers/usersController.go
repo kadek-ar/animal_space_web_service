@@ -117,13 +117,52 @@ func Login(c *gin.Context) {
 func GetUserLogin(c *gin.Context) {
 	user, _ := c.Get("user")
 	// user.(models.User).
+	// var respone models.GetShelter
+	fmt.Println("befor query")
+	var shelter models.Shelter
+	result := initializers.DB.First(&shelter, "user_id = ?", user.(models.User).ID)
+	// result := initializers.DB.Raw("SELECT * FROM shelters WHERE user_id = ?", user.(models.User).ID).First(&shelter)
+	fmt.Println("query")
+	fmt.Println(shelter)
+	if result.RowsAffected == 1 {
+		// result := initializers.DB.Raw(`
+		// 	SELECT
+		// 		a.id,
+		// 		a.name as name,
+		// 		a.phone as phone,
+		// 		a.description as description,
+		// 		a.address as address,
+		// 		a.status as status,
+		// 		b.id as user_id,
+		// 		b.email as email_user,
+		// 		b.username as owner_name
+		// 	FROM shelters a
+		// 	JOIN users b
+		// 	ON a.user_id = b.id`).First(&respone)
 
-	c.JSON(http.StatusOK, gin.H{
-		"messege":  "success",
-		"email":    user.(models.User).Email,
-		"username": user.(models.User).Username,
-		"role":     user.(models.User).Role,
-	})
+		// if result.Error != nil {
+		// 	c.JSON(http.StatusOK, gin.H{
+		// 		"messege": "Failed to retrieve data shelter",
+		// 	})
+		// }
+		c.JSON(http.StatusOK, gin.H{
+			"messege":        "success",
+			"email":          user.(models.User).Email,
+			"username":       user.(models.User).Username,
+			"role":           user.(models.User).Role,
+			"shelter_id":     shelter.ID,
+			"shelter_status": shelter.Status,
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"messege":        "success",
+			"email":          user.(models.User).Email,
+			"username":       user.(models.User).Username,
+			"role":           user.(models.User).Role,
+			"shelter_id":     "",
+			"shelter_status": "",
+		})
+	}
 
 }
 
