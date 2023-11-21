@@ -8,19 +8,19 @@ import (
 
 type Animal struct {
 	gorm.Model
-	Name         string
-	Image        string
-	Gender       string
-	Type         string
-	Age          int
-	Description  string
-	Quantity     int
-	Status       string
-	Price        int
-	CategoriesID int
-	Categories   Categories `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	ShelterID    int
-	Shelter      Shelter `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Name        string
+	Image       string
+	Gender      string
+	Type        string
+	Age         int
+	Description string
+	Quantity    int
+	Status      string
+	Price       int
+	CategoryID  int
+	Category    Category `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	ShelterID   int
+	Shelter     Shelter `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type GetAllAnimal struct {

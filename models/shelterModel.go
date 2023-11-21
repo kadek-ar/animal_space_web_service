@@ -13,7 +13,8 @@ type Shelter struct {
 	Status      string
 	Note        string
 	UserID      int
-	User        User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	User        User     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Animal      []Animal `gorm:"foreignKey:ShelterID"`
 }
 
 type GetShelter struct {
@@ -28,7 +29,7 @@ type GetShelter struct {
 	Owner_name  string
 }
 
-type Categories struct {
+type Category struct {
 	gorm.Model
 	Name  string
 	Image string

@@ -147,7 +147,7 @@ func CreateCategory(c *gin.Context) {
 		return
 	}
 
-	categories := models.Categories{Name: body.Name, Image: body.Image}
+	categories := models.Category{Name: body.Name, Image: body.Image}
 	resultInsert := initializers.DB.Create(&categories)
 
 	if resultInsert.Error != nil {
@@ -164,7 +164,7 @@ func CreateCategory(c *gin.Context) {
 }
 
 func GetAllCategories(c *gin.Context) {
-	var categories []models.Categories
+	var categories []models.Category
 	result := initializers.DB.Find(&categories)
 	if result.Error != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -230,4 +230,23 @@ func UploadFile(c *gin.Context) {
 		"messege":  "success create category",
 		"file_url": result.Location,
 	})
+}
+
+func GetShelterAnimal(c *gin.Context) {
+	var shelter models.Shelter
+	id := c.Param("id")
+	result := initializers.DB.Preload("Animal").Where("id = ?", id).First(&shelter)
+
+	if result.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data shelters",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success",
+		"data":    shelter,
+	})
+
 }

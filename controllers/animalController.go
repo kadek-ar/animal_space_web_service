@@ -13,16 +13,16 @@ func CreateAnimal(c *gin.Context) {
 	// single file
 
 	var body struct {
-		Name         string
-		Image        string
-		Gender       string
-		Type         string
-		Age          int
-		Description  string
-		Quantity     int
-		CategoriesID int
-		ShelterID    int
-		Price        int
+		Name        string
+		Image       string
+		Gender      string
+		Type        string
+		Age         int
+		Description string
+		Quantity    int
+		CategoryID  int
+		ShelterID   int
+		Price       int
 	}
 
 	if c.Bind((&body)) != nil {
@@ -33,17 +33,17 @@ func CreateAnimal(c *gin.Context) {
 	}
 
 	animal := models.Animal{
-		Name:         body.Name,
-		Image:        body.Image,
-		Gender:       body.Gender,
-		Type:         body.Type,
-		Age:          body.Age,
-		Description:  body.Description,
-		Quantity:     body.Quantity,
-		Status:       "",
-		CategoriesID: body.CategoriesID,
-		ShelterID:    body.ShelterID,
-		Price:        body.Price,
+		Name:        body.Name,
+		Image:       body.Image,
+		Gender:      body.Gender,
+		Type:        body.Type,
+		Age:         body.Age,
+		Description: body.Description,
+		Quantity:    body.Quantity,
+		Status:      "",
+		CategoryID:  body.CategoryID,
+		ShelterID:   body.ShelterID,
+		Price:       body.Price,
 	}
 	resultInsert := initializers.DB.Create(&animal)
 
