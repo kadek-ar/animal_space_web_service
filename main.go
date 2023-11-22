@@ -82,6 +82,7 @@ func main() {
 	router.PUT("/shelter/approval", middleware.RequireAuth, controllers.ApprovalShelter)
 	router.POST("/shelter/category", middleware.RequireAuth, controllers.CreateCategory)
 	router.GET("/shelter/category", middleware.RequireAuth, controllers.GetAllCategories)
+	router.GET("/shelter/animal/:id", middleware.RequireAuth, controllers.GetShelterAnimal)
 
 	router.POST("/upload", middleware.RequireAuth, controllers.UploadFile)
 
@@ -96,8 +97,8 @@ func main() {
 	router.POST("/animal-space/cart", middleware.RequireAuth, controllers.PostCart)
 	router.GET("/animal-space/cart", middleware.RequireAuth, controllers.GetCartByUser)
 	router.POST("/animal-space/checkout", middleware.RequireAuth, controllers.PostCheckout)
-
-	router.GET("/shelter/animal/:id", middleware.RequireAuth, controllers.GetShelterAnimal)
+	router.GET("/animal-space/transaction", middleware.RequireAuth, controllers.GetTransactionByUser)
+	router.GET("/animal-space/transaction/:id", middleware.RequireAuth, controllers.GetDetailTransaction)
 
 	router.Run("localhost:8081")
 }

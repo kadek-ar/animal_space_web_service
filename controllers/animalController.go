@@ -97,16 +97,16 @@ func GetAnimal(c *gin.Context) {
 func UpdateAnimal(c *gin.Context) {
 
 	var body struct {
-		Name         string
-		Image        string
-		Gender       string
-		Type         string
-		Age          int
-		Description  string
-		Quantity     int
-		CategoriesID int
-		ShelterID    int
-		Price        int
+		Name        string
+		Image       string
+		Gender      string
+		Type        string
+		Age         int
+		Description string
+		Quantity    int
+		CategoryID  int
+		ShelterID   int
+		Price       int
 	}
 
 	if c.Bind((&body)) != nil {
@@ -125,7 +125,7 @@ func UpdateAnimal(c *gin.Context) {
 			type = ?, 
 			age = ?, 
 			description = ?, 
-			categories_id = ?, 
+			category_id = ?, 
 			quantity = ?, 
 			image = ?, 
 			updated_at = ?,
@@ -136,7 +136,7 @@ func UpdateAnimal(c *gin.Context) {
 		body.Type,
 		body.Age,
 		body.Description,
-		body.CategoriesID,
+		body.CategoryID,
 		body.Quantity,
 		body.Image,
 		time.Now(),
@@ -232,7 +232,7 @@ func GetAllAnimal(c *gin.Context) {
 			a.created_at 
 		FROM animals a 
 		JOIN categories b 
-			on a.categories_id = b.id 
+			on a.category_id = b.id 
 			` + queryCategory + `
 		JOIN shelters c
 			on a.shelter_id = c.id
@@ -276,7 +276,7 @@ func GetSingelAnimal(c *gin.Context) {
 			a.created_at 
 		FROM animals a 
 		JOIN categories b 
-			on a.categories_id = b.id 
+			on a.category_id = b.id 
 		JOIN shelters c
 			on a.shelter_id = c.id
 		WHERE a.id = ?

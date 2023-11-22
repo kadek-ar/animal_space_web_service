@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"project/web-service-gin/initializers"
 	"project/web-service-gin/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -80,6 +81,10 @@ func PostCheckout(c *gin.Context) {
 		Quantity int
 		Price    int
 	}
+	total_price := c.Query("total_price")
+	number_of_item := c.Query("number_of_item")
+	total, _ := strconv.Atoi(total_price)
+	item_total, _ := strconv.Atoi(number_of_item)
 	user, _ := c.Get("user")
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -89,9 +94,11 @@ func PostCheckout(c *gin.Context) {
 	}
 
 	transaction := models.Transaction{
-		Note:   "",
-		Status: "active",
-		UserID: int(user.(models.User).ID),
+		Note:         "",
+		Status:       "active",
+		Total:        total,
+		NumberOfItem: item_total,
+		UserID:       int(user.(models.User).ID),
 	}
 
 	result := initializers.DB.Create(&transaction)
@@ -151,5 +158,67 @@ func PostCheckout(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"messege": "success create new transaction",
+	})
+}
+
+func GetTransactionByUser(c *gin.Context) {
+	var transaction []models.Transaction
+	user, _ := c.Get("user")
+	result := initializers.DB.Where("user_id = ?", int(user.(models.User).ID)).Order("created_at DESC").Find(&transaction)
+
+	if result.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data transaction",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success",
+		"data":    transaction,
+	})
+}
+
+func GetDetailTransaction(c *gin.Context) {
+	// var transaction_animals []models.TransactionAnimal
+	var res_transaction_detail []models.GetTransactionDetail
+	id, _ := strconv.Atoi(c.Param("id"))
+	// result := initializers.DB.Where("transaction_id = ?", id).Find(&transaction_animals)
+	result := initializers.DB.Raw(`
+		SELECT 
+			ta.transaction_id, 
+			ta.animal_id, 
+			ta.note, 
+			ta.images, 
+			ta.quantity, 
+			a.name as animal_name, 
+			a.gender as animal_gender, 
+			a.type as animal_type, 
+			a.description as animal_description, 
+			a.image as animal_image, 
+			a.price as animal_price,
+			c.name as animal_category,
+			s.id as shelter_id, 
+			s.name as shelter_name, 
+			s.phone as shelter_phone
+		FROM transaction_animals ta 
+		JOIN animals a 
+			on ta.animal_id = a.id 
+		JOIN categories c
+			on a.category_id = c.id 
+		JOIN shelters s 
+			on a.shelter_id = s.id 
+		WHERE transaction_id = ?`, id).Scan(&res_transaction_detail)
+
+	if result.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data transaction detail",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success",
+		"data":    res_transaction_detail,
 	})
 }
