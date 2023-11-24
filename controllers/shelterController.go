@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"project/web-service-gin/initializers"
 	"project/web-service-gin/models"
+	"strconv"
 	"strings"
 	"time"
 
@@ -249,4 +250,103 @@ func GetShelterAnimal(c *gin.Context) {
 		"data":    shelter,
 	})
 
+}
+
+func GetShelterTransaction(c *gin.Context) {
+
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	var trx_shelter []models.GetShelterTransaction
+	result := initializers.DB.Raw(`
+		SELECT 
+			ta.transaction_id,
+			t.status,
+			t.created_at,
+			COUNT(a.name) as animal_count,
+			SUM( ta.quantity * ta.price ) as total,
+			s.id as shelter_id
+		FROM transactions t
+		JOIN transaction_animals ta
+			on t.id = ta.transaction_id
+		JOIN animals a 
+			on ta.animal_id = a.id 
+		JOIN shelters s 
+			on a.shelter_id = s.id
+		WHERE s.id = ?
+		GROUP BY ta.transaction_id`, id).Scan(&trx_shelter)
+
+	if result.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data transaction detail",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success",
+		"data":    trx_shelter,
+	})
+
+}
+
+func GetShelterDetailTransaction(c *gin.Context) {
+	var res_transaction_detail []models.GetTransactionDetail
+	var user models.GetUser
+
+	id, _ := strconv.Atoi(c.Param("id"))
+	shelter_id, _ := strconv.Atoi(c.Param("shelter_id"))
+
+	resUser := initializers.DB.Raw(`
+		SELECT * FROM transactions s
+		JOIN users u
+			on s.user_id = u.id
+		WHERE s.id = ?;
+	`, id).First(&user)
+
+	if resUser.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data transaction detail",
+		})
+		return
+	}
+
+	result := initializers.DB.Raw(`
+		SELECT 
+			ta.transaction_id, 
+			ta.animal_id, 
+			ta.note, 
+			ta.images, 
+			ta.quantity, 
+			a.name as animal_name, 
+			a.gender as animal_gender, 
+			a.type as animal_type, 
+			a.description as animal_description, 
+			a.image as animal_image, 
+			a.price as animal_price,
+			c.name as animal_category,
+			s.id as shelter_id, 
+			s.name as shelter_name, 
+			s.phone as shelter_phone
+		FROM transaction_animals ta 
+		JOIN animals a 
+			on ta.animal_id = a.id 
+		JOIN categories c
+			on a.category_id = c.id 
+		JOIN shelters s 
+			on a.shelter_id = s.id 
+		WHERE transaction_id = ?
+			AND s.id = ?`, id, shelter_id).Scan(&res_transaction_detail)
+
+	if result.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data transaction detail",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success",
+		"user":    user,
+		"data":    res_transaction_detail,
+	})
 }

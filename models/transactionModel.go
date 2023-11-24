@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Transaction struct {
 	gorm.Model
@@ -37,4 +41,13 @@ type GetTransactionDetail struct {
 	ShelterID         int
 	ShelterName       string
 	ShelterPhone      string
+}
+
+type GetShelterTransaction struct {
+	TransactionID int       `json:"transaction_id"`
+	Status        string    `json:"status"`
+	CreatedAt     time.Time `json:"created_at"`
+	AnimalCount   int       `json:"animal_count"`
+	Total         int       `json:"total_price"`
+	ShelterID     int       `json:"shelter_id"`
 }
