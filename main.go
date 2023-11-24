@@ -79,6 +79,8 @@ func main() {
 
 	router.POST("/shelter/create", middleware.RequireAuth, controllers.CreateShelter)
 	router.GET("/shelter", middleware.RequireAuth, controllers.GetAllShelter)
+	router.GET("/shelter/:id", middleware.RequireAuth, controllers.GetShelter)
+	router.PUT("/shelter/:id", middleware.RequireAuth, controllers.EditShelter)
 	router.PUT("/shelter/approval", middleware.RequireAuth, controllers.ApprovalShelter)
 
 	router.POST("/shelter/category", middleware.RequireAuth, controllers.CreateCategory)
@@ -102,6 +104,7 @@ func main() {
 	router.GET("/animal-space", middleware.RequireAuth, controllers.GetAllAnimal)
 	router.GET("/animal-space/:id", middleware.RequireAuth, controllers.GetSingelAnimal)
 	router.POST("/animal-space/cart", middleware.RequireAuth, controllers.PostCart)
+	router.DELETE("/animal-space/cart/:id", middleware.RequireAuth, controllers.DeleteCart)
 	router.GET("/animal-space/cart", middleware.RequireAuth, controllers.GetCartByUser)
 	router.POST("/animal-space/checkout", middleware.RequireAuth, controllers.PostCheckout)
 	router.GET("/animal-space/transaction", middleware.RequireAuth, controllers.GetTransactionByUser)

@@ -69,6 +69,50 @@ func CreateShelter(c *gin.Context) {
 	})
 }
 
+func EditShelter(c *gin.Context) {
+
+	var body struct {
+		Name        string
+		Phone       string
+		Description string
+		Address     string
+	}
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+		return
+	}
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	resultUpdate := initializers.DB.Exec(`
+		UPDATE shelters 
+		SET 
+			name = ?,
+			phone = ?,
+			description = ?,
+			address = ?,
+			status = ?
+		WHERE id = ?`,
+		body.Name,
+		body.Phone,
+		body.Description,
+		body.Address,
+		"pending",
+		id,
+	)
+	if resultUpdate.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to update table animal",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "ssuccess update shelter",
+	})
+}
+
 func GetAllShelter(c *gin.Context) {
 	var shelters []models.Shelter
 	result := initializers.DB.Find(&shelters)
@@ -99,6 +143,25 @@ func GetAllShelter(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"messege": "success",
 		"data":    respone,
+	})
+
+}
+
+func GetShelter(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	var shelters models.Shelter
+	result := initializers.DB.Where("id = ? ", id).First(&shelters)
+	if result.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data shelter",
+		})
+	}
+
+	// respone := shelters
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success",
+		"data":    shelters,
 	})
 
 }

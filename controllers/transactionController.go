@@ -56,6 +56,26 @@ func PostCart(c *gin.Context) {
 
 }
 
+func DeleteCart(c *gin.Context) {
+	user, _ := c.Get("user")
+	id, _ := strconv.Atoi(c.Param("id"))
+	resultUpdate := initializers.DB.Exec(`
+		DELETE FROM carts 
+		WHERE user_id = ? AND animal_id = ?`,
+		int(user.(models.User).ID), id)
+	if resultUpdate.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to delete cart",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success delete cart",
+	})
+
+}
+
 func GetCartByUser(c *gin.Context) {
 	var cart []models.Cart
 	user, _ := c.Get("user")
