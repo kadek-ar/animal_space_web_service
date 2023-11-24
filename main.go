@@ -80,11 +80,16 @@ func main() {
 	router.POST("/shelter/create", middleware.RequireAuth, controllers.CreateShelter)
 	router.GET("/shelter", middleware.RequireAuth, controllers.GetAllShelter)
 	router.PUT("/shelter/approval", middleware.RequireAuth, controllers.ApprovalShelter)
+
 	router.POST("/shelter/category", middleware.RequireAuth, controllers.CreateCategory)
 	router.GET("/shelter/category", middleware.RequireAuth, controllers.GetAllCategories)
+	router.PUT("/shelter/category/:id", middleware.RequireAuth, controllers.EditCategory)
+	router.DELETE("/shelter/category/:id", middleware.RequireAuth, controllers.DeleteCategory)
+
 	router.GET("/shelter/animal/:id", middleware.RequireAuth, controllers.GetShelterAnimal)
 	router.GET("/shelter/transaction/:id", middleware.RequireAuth, controllers.GetShelterTransaction)
 	router.GET("/shelter/transaction/detail/:shelter_id/:id", middleware.RequireAuth, controllers.GetShelterDetailTransaction)
+	router.PUT("/shelter/transaction/detail/approval", middleware.RequireAuth, controllers.PostApprovalReceipt)
 
 	router.POST("/upload", middleware.RequireAuth, controllers.UploadFile)
 
@@ -101,6 +106,7 @@ func main() {
 	router.POST("/animal-space/checkout", middleware.RequireAuth, controllers.PostCheckout)
 	router.GET("/animal-space/transaction", middleware.RequireAuth, controllers.GetTransactionByUser)
 	router.GET("/animal-space/transaction/:id", middleware.RequireAuth, controllers.GetDetailTransaction)
+	router.POST("/animal-space/transaction/receipt", middleware.RequireAuth, controllers.PostReceipt)
 
 	router.Run("localhost:8081")
 }

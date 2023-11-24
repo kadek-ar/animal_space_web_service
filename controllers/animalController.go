@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"project/web-service-gin/initializers"
 	"project/web-service-gin/models"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -158,13 +159,14 @@ func UpdateAnimal(c *gin.Context) {
 
 func DeleteAnimal(c *gin.Context) {
 
-	id := c.Param("id")
-
-	resultUpdate := initializers.DB.Exec(`
-		DELETE FROM animals 
-		WHERE id = ?`,
-		id,
-	)
+	id, _ := strconv.Atoi(c.Param("id"))
+	var animal models.Animal
+	// resultUpdate := initializers.DB.Exec(`
+	// 	DELETE FROM animals
+	// 	WHERE id = ?`,
+	// 	id,
+	// )
+	resultUpdate := initializers.DB.Where("id = ?", id).Delete(&animal)
 	if resultUpdate.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Failed to delet animal",
@@ -210,7 +212,7 @@ func GetAllAnimal(c *gin.Context) {
 
 	}
 	if queryRange != "" || querySearch != "" {
-		queryWhere = "WHERE"
+		queryWhere = "AND"
 	}
 
 	result := initializers.DB.Raw(` 
@@ -236,7 +238,7 @@ func GetAllAnimal(c *gin.Context) {
 			` + queryCategory + `
 		JOIN shelters c
 			on a.shelter_id = c.id
-		` + queryWhere + ` ` + querySearch + ` ` + queryLogic + ` ` + queryRange +
+		WHERE a.deleted_at is NULL ` + queryWhere + ` ` + querySearch + ` ` + queryLogic + ` ` + queryRange +
 		`ORDER BY a.created_at DESC
 	`).Scan(&animal)
 	if result.Error != nil {

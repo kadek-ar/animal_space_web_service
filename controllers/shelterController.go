@@ -164,6 +164,63 @@ func CreateCategory(c *gin.Context) {
 	})
 }
 
+func EditCategory(c *gin.Context) {
+	// single file
+
+	var body struct {
+		Name  string
+		Image string
+	}
+
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	if c.Bind((&body)) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+		return
+	}
+
+	resultInsert := initializers.DB.Exec(`
+		UPDATE categories 
+		SET name = ?, 
+			image = ?, 
+			updated_at = ?
+		WHERE id = ?
+	`, body.Name, body.Image, time.Now(), id)
+
+	if resultInsert.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to update category",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		// "image": result.Location,
+		"messege": "success create category",
+	})
+}
+
+func DeleteCategory(c *gin.Context) {
+
+	id, _ := strconv.Atoi(c.Param("id"))
+	var category models.Category
+	resultInsert := initializers.DB.Where("id = ? ", id).Delete(&category)
+
+	if resultInsert.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to update category",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		// "image": result.Location,
+		"messege": "success create category",
+	})
+}
+
 func GetAllCategories(c *gin.Context) {
 	var categories []models.Category
 	result := initializers.DB.Find(&categories)
@@ -263,6 +320,7 @@ func GetShelterTransaction(c *gin.Context) {
 			t.status,
 			t.created_at,
 			COUNT(a.name) as animal_count,
+			SUM(CASE WHEN ta.status = 'approve' THEN 1 ELSE 0 END) as approve_count,
 			SUM( ta.quantity * ta.price ) as total,
 			s.id as shelter_id
 		FROM transactions t
@@ -273,7 +331,8 @@ func GetShelterTransaction(c *gin.Context) {
 		JOIN shelters s 
 			on a.shelter_id = s.id
 		WHERE s.id = ?
-		GROUP BY ta.transaction_id`, id).Scan(&trx_shelter)
+		GROUP BY ta.transaction_id
+		ORDER BY t.created_at DESC`, id).Scan(&trx_shelter)
 
 	if result.Error != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -317,6 +376,7 @@ func GetShelterDetailTransaction(c *gin.Context) {
 			ta.note, 
 			ta.images, 
 			ta.quantity, 
+			ta.status,
 			a.name as animal_name, 
 			a.gender as animal_gender, 
 			a.type as animal_type, 
@@ -348,5 +408,35 @@ func GetShelterDetailTransaction(c *gin.Context) {
 		"messege": "success",
 		"user":    user,
 		"data":    res_transaction_detail,
+	})
+}
+
+func PostApprovalReceipt(c *gin.Context) {
+
+	var body models.GetTransactionDetail
+
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to read body",
+		})
+		return
+	}
+
+	result := initializers.DB.Exec(` 
+		UPDATE transaction_animals 
+		SET 
+			status = ?
+		WHERE transaction_id = ? AND animal_id = ? 
+		`, body.Status, body.TransactionID, body.AnimalID)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"messege": "Failed to update transaction detail",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success approval receipt",
 	})
 }

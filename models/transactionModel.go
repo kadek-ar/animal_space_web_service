@@ -24,6 +24,7 @@ type TransactionAnimal struct {
 	Quantity      int
 	Price         int
 	Images        string
+	Status        string
 }
 
 type GetTransactionDetail struct {
@@ -31,6 +32,7 @@ type GetTransactionDetail struct {
 	AnimalID          int
 	Images            string
 	Quantity          int
+	Status            string
 	AnimalName        string
 	AnimalGender      string
 	AnimalType        string
@@ -49,5 +51,16 @@ type GetShelterTransaction struct {
 	CreatedAt     time.Time `json:"created_at"`
 	AnimalCount   int       `json:"animal_count"`
 	Total         int       `json:"total_price"`
+	ApproveCount  int       `json:"approve_count"`
+	ShelterID     int       `json:"shelter_id"`
+}
+
+type GetUserTransaction struct {
+	TransactionID int       `json:"transaction_id"`
+	Status        string    `json:"status"`
+	CreatedAt     time.Time `json:"created_at"`
+	AnimalCount   int       `json:"animal_count"`
+	Total         int       `json:"total_price"`
+	ApproveCount  int       `json:"approve_count"`
 	ShelterID     int       `json:"shelter_id"`
 }
