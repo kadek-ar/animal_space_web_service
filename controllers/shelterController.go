@@ -384,6 +384,7 @@ func GetShelterTransaction(c *gin.Context) {
 			t.created_at,
 			COUNT(a.name) as animal_count,
 			SUM(CASE WHEN ta.status = 'approve' THEN 1 ELSE 0 END) as approve_count,
+			SUM(CASE WHEN ta.status = 'reject' THEN 1 ELSE 0 END) as reject_count,
 			SUM( ta.quantity * ta.price ) as total,
 			s.id as shelter_id
 		FROM transactions t
@@ -483,6 +484,22 @@ func PostApprovalReceipt(c *gin.Context) {
 			"error": "Failed to read body",
 		})
 		return
+	}
+
+	if body.Status == "approve" {
+		resultUpdate := initializers.DB.Exec(` 
+			UPDATE animals 
+			SET 
+				status = ?
+			WHERE id = ? 
+			`, "sold", body.AnimalID)
+
+		if resultUpdate.Error != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"messege": "Failed to update animals",
+			})
+			return
+		}
 	}
 
 	result := initializers.DB.Exec(` 

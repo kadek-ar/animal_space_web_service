@@ -52,6 +52,7 @@ type GetShelterTransaction struct {
 	AnimalCount   int       `json:"animal_count"`
 	Total         int       `json:"total_price"`
 	ApproveCount  int       `json:"approve_count"`
+	RejectCount   int       `json:"reject_count"`
 	ShelterID     int       `json:"shelter_id"`
 }
 
@@ -62,5 +63,6 @@ type GetUserTransaction struct {
 	AnimalCount   int       `json:"animal_count"`
 	Total         int       `json:"total_price"`
 	ApproveCount  int       `json:"approve_count"`
+	RejectCount   int       `json:"reject_count"`
 	ShelterID     int       `json:"shelter_id"`
 }

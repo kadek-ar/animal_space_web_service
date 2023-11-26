@@ -13,6 +13,7 @@ type Animal struct {
 	Gender      string
 	Type        string
 	Age         int
+	Month       int
 	Description string
 	Quantity    int
 	Status      string
@@ -28,6 +29,7 @@ type GetAllAnimal struct {
 	Name          string
 	Type          string
 	Age           int
+	Month         int
 	Description   string
 	Quantity      int
 	Price         int

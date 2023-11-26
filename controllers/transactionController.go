@@ -149,6 +149,7 @@ func PostCheckout(c *gin.Context) {
 			Quantity:      b.Quantity,
 			Price:         b.Price,
 			Images:        "",
+			Status:        "pending",
 		}
 
 		resultTrx := initializers.DB.Create(&transactionDetail)
@@ -193,6 +194,7 @@ func GetTransactionByUser(c *gin.Context) {
 		t.created_at,
 		COUNT(a.name) as animal_count,
 		SUM(CASE WHEN ta.status = 'approve' THEN 1 ELSE 0 END) as approve_count,
+		SUM(CASE WHEN ta.status = 'reject' THEN 1 ELSE 0 END) as reject_count,
 		SUM( ta.quantity * ta.price ) as total,
 		u.id as user_id
 	FROM transactions t

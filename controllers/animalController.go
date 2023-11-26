@@ -19,6 +19,7 @@ func CreateAnimal(c *gin.Context) {
 		Gender      string
 		Type        string
 		Age         int
+		Month       int
 		Description string
 		Quantity    int
 		CategoryID  int
@@ -39,8 +40,9 @@ func CreateAnimal(c *gin.Context) {
 		Gender:      body.Gender,
 		Type:        body.Type,
 		Age:         body.Age,
+		Month:       body.Month,
 		Description: body.Description,
-		Quantity:    body.Quantity,
+		Quantity:    1,
 		Status:      "",
 		CategoryID:  body.CategoryID,
 		ShelterID:   body.ShelterID,
@@ -186,7 +188,10 @@ func GetAllAnimal(c *gin.Context) {
 	category := c.Query("category")
 	from_age := c.Query("from_age")
 	to_age := c.Query("to_age")
+	from_month := c.Query("from_month")
+	to_month := c.Query("to_month")
 	var queryRange string
+	var queryRangeMonth string
 	var querySearch string
 	var queryLogic string
 	var queryWhere string
@@ -195,6 +200,7 @@ func GetAllAnimal(c *gin.Context) {
 		category = "%"
 	}
 	queryCategory = "and LOWER(b.name) LIKE LOWER('" + category + "')"
+
 	if from_age == "" && to_age != "" {
 		from_age = to_age
 	}
@@ -204,6 +210,17 @@ func GetAllAnimal(c *gin.Context) {
 	if to_age != "" || from_age != "" {
 		queryRange = " a.age Between " + from_age + " AND " + to_age + " "
 	}
+
+	if from_month == "" && to_month != "" {
+		from_month = to_month
+	}
+	if to_month == "" && from_month != "" {
+		to_month = from_month
+	}
+	if to_month != "" || from_month != "" {
+		queryRangeMonth = "AND a.month Between " + from_month + " AND " + to_month + " "
+	}
+
 	if search != "" {
 		querySearch = " LOWER(a.name) LIKE LOWER('%" + search + "%') OR LOWER(a.type) LIKE LOWER('%" + search + "%') "
 	}
@@ -238,8 +255,8 @@ func GetAllAnimal(c *gin.Context) {
 			` + queryCategory + `
 		JOIN shelters c
 			on a.shelter_id = c.id
-		WHERE a.deleted_at is NULL ` + queryWhere + ` ` + querySearch + ` ` + queryLogic + ` ` + queryRange +
-		`ORDER BY a.created_at DESC
+		WHERE a.deleted_at is NULL ` + queryWhere + ` ` + querySearch + ` ` + queryLogic + ` ` + queryRange + ` ` + queryRangeMonth +
+		` ORDER BY a.created_at DESC
 	`).Scan(&animal)
 	if result.Error != nil {
 		c.JSON(http.StatusOK, gin.H{
