@@ -152,6 +152,7 @@ func GetUserLogin(c *gin.Context) {
 			"role":           user.(models.User).Role,
 			"shelter_id":     shelter.ID,
 			"shelter_status": shelter.Status,
+			"shelter_name":   shelter.Name,
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
@@ -161,6 +162,7 @@ func GetUserLogin(c *gin.Context) {
 			"role":           user.(models.User).Role,
 			"shelter_id":     "",
 			"shelter_status": "",
+			"shelter_name":   "",
 		})
 	}
 

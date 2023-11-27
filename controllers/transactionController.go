@@ -221,6 +221,124 @@ func GetTransactionByUser(c *gin.Context) {
 	})
 }
 
+func GetTransactionAdmin(c *gin.Context) {
+	var transaction []models.GetAdminTransaction
+	// result := initializers.DB.Where("user_id = ?", int(user.(models.User).ID)).Order("created_at DESC").Find(&transaction)
+
+	result := initializers.DB.Raw(`
+	SELECT 
+		ta.transaction_id,
+		t.status,
+		t.created_at,
+		COUNT(a.name) as animal_count,
+		SUM(CASE WHEN ta.status = 'approve' THEN 1 ELSE 0 END) as approve_count,
+		SUM(CASE WHEN ta.status = 'reject' THEN 1 ELSE 0 END) as reject_count,
+		SUM( ta.quantity * ta.price ) as total,
+		u.id as user_id,
+		u.username as user_name,
+		u.email as user_email,
+		s.id as shelter_id,
+		s.name as shelter_name,
+		s.phone as shelter_phone
+	FROM transactions t
+	JOIN transaction_animals ta
+		on t.id = ta.transaction_id
+	JOIN animals a 
+		on ta.animal_id = a.id 
+	JOIN users u
+		on t.user_id = u.id
+	JOIN shelters s
+		on a.shelter_id = s.id
+	GROUP BY ta.transaction_id
+	ORDER BY t.created_at DESC`).Scan(&transaction)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"messege": "Failed to retrieve data transaction",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success",
+		"data":    transaction,
+	})
+}
+
+func GetAdminDetailTransaction(c *gin.Context) {
+	var res_transaction_detail []models.GetTransactionDetail
+	var user models.GetUser
+	var shelter models.Shelter
+
+	id, _ := strconv.Atoi(c.Param("id"))
+	shelter_id, _ := strconv.Atoi(c.Param("shelter_id"))
+
+	resUser := initializers.DB.Raw(`
+		SELECT * FROM transactions s
+		JOIN users u
+			on s.user_id = u.id
+		WHERE s.id = ?;
+	`, id).First(&user)
+
+	if resUser.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data transaction detail",
+		})
+		return
+	}
+
+	resShelter := initializers.DB.Where("id = ?", shelter_id).First(&shelter)
+
+	if resShelter.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data transaction detail shelter",
+		})
+		return
+	}
+
+	result := initializers.DB.Raw(`
+		SELECT 
+			ta.transaction_id, 
+			ta.animal_id, 
+			ta.note, 
+			ta.images, 
+			ta.quantity, 
+			ta.status,
+			a.name as animal_name, 
+			a.gender as animal_gender, 
+			a.type as animal_type, 
+			a.description as animal_description, 
+			a.image as animal_image, 
+			a.price as animal_price,
+			c.name as animal_category,
+			s.id as shelter_id, 
+			s.name as shelter_name, 
+			s.phone as shelter_phone
+		FROM transaction_animals ta 
+		JOIN animals a 
+			on ta.animal_id = a.id 
+		JOIN categories c
+			on a.category_id = c.id 
+		JOIN shelters s 
+			on a.shelter_id = s.id 
+		WHERE transaction_id = ?
+			AND s.id = ?`, id, shelter_id).Scan(&res_transaction_detail)
+
+	if result.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data transaction detail",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success",
+		"user":    user,
+		"shelter": shelter,
+		"data":    res_transaction_detail,
+	})
+}
+
 func GetDetailTransaction(c *gin.Context) {
 	// var transaction_animals []models.TransactionAnimal
 	var res_transaction_detail []models.GetTransactionDetail

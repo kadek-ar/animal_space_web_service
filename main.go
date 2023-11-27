@@ -83,6 +83,10 @@ func main() {
 	router.PUT("/shelter/:id", middleware.RequireAuth, controllers.EditShelter)
 	router.PUT("/shelter/approval", middleware.RequireAuth, controllers.ApprovalShelter)
 
+	router.GET("/admin/transaction", middleware.RequireAuth, controllers.GetTransactionAdmin)
+	router.GET("/admin/transaction/:shelter_id/:id", middleware.RequireAuth, controllers.GetAdminDetailTransaction)
+	router.GET("/admin/animal", middleware.RequireAuth, controllers.GetAllAnimalAdmin)
+
 	router.POST("/shelter/category", middleware.RequireAuth, controllers.CreateCategory)
 	router.GET("/shelter/category", middleware.RequireAuth, controllers.GetAllCategories)
 	router.PUT("/shelter/category/:id", middleware.RequireAuth, controllers.EditCategory)

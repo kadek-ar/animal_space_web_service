@@ -80,6 +80,23 @@ func GetAllAnimalByShelter(c *gin.Context) {
 
 }
 
+func GetAllAnimalAdmin(c *gin.Context) {
+	var animal []models.Animal
+	result := initializers.DB.Preload("Shelter").Find(&animal)
+	if result.Error != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"messege": "Failed to retrieve data animal",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "success",
+		"data":    animal,
+	})
+
+}
+
 func GetAnimal(c *gin.Context) {
 	var animal models.Animal
 	id := c.Param("id")
@@ -255,7 +272,7 @@ func GetAllAnimal(c *gin.Context) {
 			` + queryCategory + `
 		JOIN shelters c
 			on a.shelter_id = c.id
-		WHERE a.deleted_at is NULL ` + queryWhere + ` ` + querySearch + ` ` + queryLogic + ` ` + queryRange + ` ` + queryRangeMonth +
+		WHERE a.deleted_at is NULL and a.status NOT LIKE 'sold' ` + queryWhere + ` ` + querySearch + ` ` + queryLogic + ` ` + queryRange + ` ` + queryRangeMonth +
 		` ORDER BY a.created_at DESC
 	`).Scan(&animal)
 	if result.Error != nil {
@@ -292,6 +309,8 @@ func GetSingelAnimal(c *gin.Context) {
 			b.name as category_name, 
 			c.id as shelter_id,
 			c.name as shelter_name,
+			c.phone as shelter_phone,
+			c.address as shelter_address,
 			a.created_at 
 		FROM animals a 
 		JOIN categories b 

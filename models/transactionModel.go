@@ -66,3 +66,19 @@ type GetUserTransaction struct {
 	RejectCount   int       `json:"reject_count"`
 	ShelterID     int       `json:"shelter_id"`
 }
+
+type GetAdminTransaction struct {
+	TransactionID int       `json:"transaction_id"`
+	Status        string    `json:"status"`
+	CreatedAt     time.Time `json:"created_at"`
+	AnimalCount   int       `json:"animal_count"`
+	Total         int       `json:"total_price"`
+	ApproveCount  int       `json:"approve_count"`
+	RejectCount   int       `json:"reject_count"`
+	ShelterID     int       `json:"shelter_id"`
+	ShelterName   string    `json:"shelter_name"`
+	ShelterPhone  string    `json:"shelter_phone"`
+	UserID        int       `json:"user_id"`
+	UserName      string    `json:"user_name"`
+	UserEmail     string    `json:"user_email"`
+}

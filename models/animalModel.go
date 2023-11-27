@@ -25,19 +25,21 @@ type Animal struct {
 }
 
 type GetAllAnimal struct {
-	Id            int
-	Name          string
-	Type          string
-	Age           int
-	Month         int
-	Description   string
-	Quantity      int
-	Price         int
-	Status        string
-	Image         string
-	Category_id   int
-	Category_name string
-	Shelter_id    int
-	Shelter_name  string
-	Created_at    time.Time
+	Id              int
+	Name            string
+	Type            string
+	Age             int
+	Month           int
+	Description     string
+	Quantity        int
+	Price           int
+	Status          string
+	Image           string
+	Category_id     int
+	Category_name   string
+	Shelter_id      int
+	Shelter_name    string
+	Shelter_Phone   string
+	Shelter_Address string
+	Created_at      time.Time
 }
