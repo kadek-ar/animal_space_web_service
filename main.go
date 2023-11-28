@@ -99,6 +99,11 @@ func main() {
 
 	router.POST("/upload", middleware.RequireAuth, controllers.UploadFile)
 
+	router.POST("/admin/banner", middleware.RequireAuth, controllers.PostBanner)
+	router.GET("/admin/banner", middleware.RequireAuth, controllers.GetBanner)
+	router.PUT("/admin/banner", middleware.RequireAuth, controllers.EditBanner)
+	router.DELETE("/admin/banner/:id", middleware.RequireAuth, controllers.DeleteBanner)
+
 	router.POST("/animal", middleware.RequireAuth, controllers.CreateAnimal)
 	router.GET("/animal", middleware.RequireAuth, controllers.GetAllAnimalByShelter)
 	router.GET("/animal/:id", middleware.RequireAuth, controllers.GetAnimal)

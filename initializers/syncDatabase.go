@@ -11,5 +11,6 @@ func SyncDatabase() {
 		&models.Cart{},
 		&models.Transaction{},
 		&models.TransactionAnimal{},
+		&models.Banner{},
 	)
 }
