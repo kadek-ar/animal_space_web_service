@@ -41,6 +41,12 @@ func postAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newAlbum)
 }
 
+func pingHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"messege": "ping",
+	})
+}
+
 func init() {
 	initializers.LoadEnvVariables()
 	initializers.ConnectToDb()
@@ -70,6 +76,7 @@ func main() {
 	// router.Use(cors.Default())
 	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 	router.Use(CORSMiddleware())
+	router.GET("/ping", pingHandler)
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
 	router.POST("/signup", controllers.Signup)
@@ -120,5 +127,5 @@ func main() {
 	router.GET("/animal-space/transaction/:id", middleware.RequireAuth, controllers.GetDetailTransaction)
 	router.POST("/animal-space/transaction/receipt", middleware.RequireAuth, controllers.PostReceipt)
 
-	router.Run("localhost:8081")
+	router.Run()
 }
