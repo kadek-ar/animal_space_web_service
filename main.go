@@ -79,8 +79,13 @@ func main() {
 	router.GET("/ping", pingHandler)
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
+
 	router.POST("/signup", controllers.Signup)
 	router.POST("/login", controllers.Login)
+	router.POST("/forgetpassword", controllers.RequestResetPassword)
+	router.POST("/verify", controllers.VerifyEmail)
+	router.POST("/resetpassword", controllers.ResetPassword)
+
 	router.GET("/validate", middleware.RequireAuth, controllers.Validate)
 	router.GET("/user", middleware.RequireAuth, controllers.GetUserLogin)
 

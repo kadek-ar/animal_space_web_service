@@ -8,6 +8,8 @@ type User struct {
 	Username string
 	Role     string
 	Password string `gorm:"size:100"`
+	Status   string
+	Hash     string
 }
 
 type GetUser struct {
