@@ -286,7 +286,7 @@ func sendEmail(email string, username string, htmlTamplatePath string, link stri
 	m.SetBody("text/html", htmlContent)
 	// m.Attach("/home/Alex/lolcat.jpg")
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, from, "zkfcemkkhqbvesf")
+	d := gomail.NewDialer("smtp.gmail.com", 587, from, "fjnmjahqcrhbiogm")
 
 	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(m); err != nil {
