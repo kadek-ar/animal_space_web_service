@@ -277,7 +277,7 @@ func sendEmail(email string, username string, htmlTamplatePath string, link stri
 	// 	fmt.Println(response.Headers)
 	// }
 
-	from := "fedrationhidden@gmail.com"
+	from := "shelterspace27@gmail.com"
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", from)
@@ -286,7 +286,7 @@ func sendEmail(email string, username string, htmlTamplatePath string, link stri
 	m.SetBody("text/html", htmlContent)
 	// m.Attach("/home/Alex/lolcat.jpg")
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, from, "fqhvbiajikzathmh")
+	d := gomail.NewDialer("smtp.gmail.com", 587, from, "zkfcemkkhqbvesf")
 
 	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(m); err != nil {
