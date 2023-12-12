@@ -18,7 +18,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-const charset2 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.][-)(*&^%$#@!~)]?><1234567890"
+const charset2 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ][_)($!)]><1234567890"
 
 func randomHash(n int) string {
 	sb := strings.Builder{}
