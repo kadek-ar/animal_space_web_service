@@ -55,7 +55,9 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	link := os.Getenv("BASE_URL_EMAIL") + "verify-email?idveas=" + randomHash(60)
+	hashVerif := randomHash(60)
+
+	link := os.Getenv("BASE_URL_EMAIL") + "verify-email?idveas=" + hashVerif
 
 	errEmail := sendEmail(body.Email, body.Username, "./assets/template/verifyEmail.html", link, "Verify your email to continue signup")
 
@@ -67,7 +69,7 @@ func Signup(c *gin.Context) {
 	}
 
 	// create the user
-	user := models.User{Email: body.Email, Password: string(hash), Username: body.Username, Role: "user", Status: "pending"}
+	user := models.User{Email: body.Email, Password: string(hash), Username: body.Username, Role: "user", Status: "pending", Hash: hashVerif}
 	result := initializers.DB.Create(&user)
 
 	if result.Error != nil {
