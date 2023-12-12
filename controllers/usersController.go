@@ -14,9 +14,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/sendgrid/sendgrid-go"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/gomail.v2"
 )
 
 const charset2 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.][-)(*&^%$#@!~)]?><1234567890"
@@ -231,26 +230,68 @@ func VerifyEmail(c *gin.Context) {
 	})
 }
 
+// func sendEmail(email string, username string, htmlTamplatePath string, link string, subjectTitle string) (err error) {
+
+// 	var body bytes.Buffer
+// 	t, err := template.ParseFiles(htmlTamplatePath)
+// 	t.Execute(&body, struct{ Link string }{Link: link})
+
+// 	from := mail.NewEmail("Animal Space Admin", "Shelterspace27@gmail.com")
+// 	subject := subjectTitle
+// 	to := mail.NewEmail(username, email)
+// 	plainTextContent := "Verify you email"
+// 	htmlContent := body.String()
+// 	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
+// 	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_KEY"))
+// 	response, err := client.Send(message)
+// 	if err != nil {
+// 		return err
+// 	} else {
+// 		fmt.Println(response.StatusCode)
+// 		fmt.Println(response.Body)
+// 		fmt.Println(response.Headers)
+// 	}
+
+// 	return
+// }
+
 func sendEmail(email string, username string, htmlTamplatePath string, link string, subjectTitle string) (err error) {
 
 	var body bytes.Buffer
 	t, err := template.ParseFiles(htmlTamplatePath)
 	t.Execute(&body, struct{ Link string }{Link: link})
 
-	from := mail.NewEmail("Animal Space Admin", "Shelterspace27@gmail.com")
-	subject := subjectTitle
-	to := mail.NewEmail(username, email)
-	plainTextContent := "Verify you email"
+	// from := mail.NewEmail("Animal Space Admin", "Shelterspace27@gmail.com")
+	// subject := subjectTitle
+	// to := mail.NewEmail(username, email)
+	// plainTextContent := "Verify you email"
 	htmlContent := body.String()
-	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
-	client := sendgrid.NewSendClient(os.Getenv("SENDGRID_KEY"))
-	response, err := client.Send(message)
-	if err != nil {
+	// message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
+	// client := sendgrid.NewSendClient(os.Getenv("SENDGRID_KEY"))
+	// response, err := client.Send(message)
+	// if err != nil {
+	// 	return err
+	// } else {
+	// 	fmt.Println(response.StatusCode)
+	// 	fmt.Println(response.Body)
+	// 	fmt.Println(response.Headers)
+	// }
+
+	from := "fedrationhidden@gmail.com"
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", from)
+	m.SetHeader("To", email)
+	m.SetHeader("Subject", subjectTitle)
+	m.SetBody("text/html", htmlContent)
+	// m.Attach("/home/Alex/lolcat.jpg")
+
+	d := gomail.NewDialer("smtp.gmail.com", 587, from, "fqhvbiajikzathmh")
+
+	// Send the email to Bob, Cora and Dan.
+	if err := d.DialAndSend(m); err != nil {
+		fmt.Println(err)
 		return err
-	} else {
-		fmt.Println(response.StatusCode)
-		fmt.Println(response.Body)
-		fmt.Println(response.Headers)
 	}
 
 	return
