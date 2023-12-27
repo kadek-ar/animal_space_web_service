@@ -37,6 +37,7 @@ func CreateShelter(c *gin.Context) {
 		Phone       string
 		Description string
 		Address     string
+		UserID      int
 	}
 
 	if c.Bind(&body) != nil {
@@ -45,14 +46,15 @@ func CreateShelter(c *gin.Context) {
 		})
 		return
 	}
-	user, _ := c.Get("user")
+	// user, _ := c.Get("user")
 	shelter := models.Shelter{
 		Name:        body.Name,
 		Phone:       body.Phone,
 		Description: body.Description,
 		Address:     body.Address,
 		Status:      "pending",
-		UserID:      int(user.(models.User).ID),
+		// UserID:      int(user.(models.User).ID),
+		UserID: body.UserID,
 	}
 
 	result := initializers.DB.Create(&shelter)
@@ -133,7 +135,8 @@ func GetAllShelter(c *gin.Context) {
 			a.status as status, 
 			b.id as user_id, 
 			b.email as email_user, 
-			b.username as owner_name 
+			b.username as owner_name,
+			b.status as user_status 
 		FROM shelters a 
 		JOIN users b 
 		ON a.user_id = b.id`).Scan(&respone)

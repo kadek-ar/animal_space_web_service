@@ -89,7 +89,7 @@ func main() {
 	router.GET("/validate", middleware.RequireAuth, controllers.Validate)
 	router.GET("/user", middleware.RequireAuth, controllers.GetUserLogin)
 
-	router.POST("/shelter/create", middleware.RequireAuth, controllers.CreateShelter)
+	router.POST("/shelter/create", controllers.CreateShelter)
 	router.GET("/shelter", middleware.RequireAuth, controllers.GetAllShelter)
 	router.GET("/shelter/:id", controllers.GetShelter)
 	router.PUT("/shelter/:id", middleware.RequireAuth, controllers.EditShelter)

@@ -79,7 +79,9 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{
+		"id": user.ID,
+	})
 }
 
 func Login(c *gin.Context) {

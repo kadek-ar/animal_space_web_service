@@ -27,6 +27,7 @@ type GetShelter struct {
 	User_id     int
 	Email_user  string
 	Owner_name  string
+	User_status string
 }
 
 type Category struct {
