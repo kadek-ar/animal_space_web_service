@@ -78,6 +78,7 @@ func EditShelter(c *gin.Context) {
 		Phone       string
 		Description string
 		Address     string
+		DirectEdit  bool `json:"direct_edit"`
 	}
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -86,6 +87,11 @@ func EditShelter(c *gin.Context) {
 		return
 	}
 	id, _ := strconv.Atoi(c.Param("id"))
+
+	var status = "pending"
+	if body.DirectEdit {
+		status = ""
+	}
 
 	resultUpdate := initializers.DB.Exec(`
 		UPDATE shelters 
@@ -100,7 +106,7 @@ func EditShelter(c *gin.Context) {
 		body.Phone,
 		body.Description,
 		body.Address,
-		"pending",
+		status,
 		id,
 	)
 	if resultUpdate.Error != nil {
