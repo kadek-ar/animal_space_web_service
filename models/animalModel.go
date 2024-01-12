@@ -27,6 +27,7 @@ type Animal struct {
 type GetAllAnimal struct {
 	Id              int
 	Name            string
+	Gender          string
 	Type            string
 	Age             int
 	Month           int
